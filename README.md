@@ -23,26 +23,21 @@ Suggest to a user what jobs he should apply to
 
 ## PROJECT SETUP 
 
-Make sure Docker is running
+ - Make sure Docker is running (On Windows, install Dev Container extension (for the make command) )
+ - Make sure the Controllers are the correct ones (so far, we’re using the hello-world ones)
 
-(On Windows, install Dev Container extension (for the make command) )
-
-Make sure the Controllers are the correct ones (so far, we’re using the hello-world ones)
-
-**Make build**
--> do this any time you change controllers
-
-(On Mac, you need to somehow add /workspaces directory to File Sharing)
-**./start.sh**
-
-**./stop.sh**
+ - **Make build** -> do this any time you change controllers
+ - **./start.sh** (On Mac, you need to add /workspaces directory to File Sharing in Docker before)
+ - **./stop.sh**
 
 ——————
-In case make build fails, before retrying: **docker ps -a** => get the ID of the hello-build container
+In case **make build** fails, before retrying: 
+ - **docker ps -a** => get the ID of the hello-build container
+ - **docker rm [id]**
 
-**docker rm [id]**
+To see mongo on web: 
 
-To see mongo on web: Terminal -> Ports -> 8090 (mongo), 8080 (API)  -> Forwarded address -> web icon
+Terminal -> Ports -> 8090 (mongo), 8080 (API)  -> Forwarded address -> web icon
 
 You will be prompted to a web page where you login: 
 
