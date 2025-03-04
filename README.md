@@ -24,7 +24,7 @@ Suggest to a user what jobs he should apply to
 ## PROJECT SETUP 
 
  - Make sure Docker is running (On Windows, install Dev Container extension (for the make command) )
- - Make sure the Controllers are the correct ones (so far, we’re using the hello-world ones)
+ - Decomment default Controllers and comment custom ones (so far, we’re using the hello-world ones)
 
  - **Make build** -> do this any time you change controllers
  - **./start.sh** (On Mac, you need to add /workspaces directory to File Sharing in Docker before)
