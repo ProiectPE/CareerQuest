@@ -16,14 +16,15 @@ Monetizing:
  - if they don't pay the fee they have limited possibilities
 
 Rank applicants for a job based on how much they fit
-Suggest to a user what jobs he should apply to
 
+Suggest to a user what jobs he should apply to
 
 
 
 ## PROJECT SETUP 
 
 Make sure Docker is running
+
 (On Windows, install Dev Container extension (for the make command) )
 
 Make sure the Controllers are the correct ones (so far, we’re using the hello-world ones)
@@ -37,12 +38,16 @@ Make sure the Controllers are the correct ones (so far, we’re using the hello-
 **./stop.sh**
 
 ——————
-In case make build fails, before retrying: docker ps -a => get the ID of the hello-build container
-docker rm [id]
+In case make build fails, before retrying: **docker ps -a** => get the ID of the hello-build container
+
+**docker rm [id]**
 
 To see mongo on web: Terminal -> Ports -> 8090 (mongo), 8080 (API)  -> Forwarded address -> web icon
 
-You will be prompted to a web page where you login: username: unibuc
+You will be prompted to a web page where you login: 
+
+username: unibuc
+
 password: adobe
 
 To test server:  
