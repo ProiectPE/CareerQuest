@@ -31,18 +31,18 @@ Suggest to a user what jobs he should apply to
  - **./stop.sh**
 
 ——————
-In case **make build** fails, before retrying: 
+In case **make build** fails, before retrying:
  - **docker ps -a** => get the ID of the hello-build container
  - **docker rm [id]**
 
-To see mongo on web: 
+To see mongo on web:
 
 Terminal -> Ports -> 8090 (mongo), 8080 (API)  -> Forwarded address -> web icon
 
-You will be prompted to a web page where you login: 
+You will be prompted to a web page where you login:
 
 username: unibuc
 
 password: adobe
 
-To test server:  
+To test server:

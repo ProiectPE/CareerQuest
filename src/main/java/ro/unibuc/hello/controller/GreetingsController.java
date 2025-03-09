@@ -19,145 +19,117 @@ public class GreetingsController {
     @Autowired
     private GreetingsService greetingsService;
 
-    @GetMapping("/user")
-    @ResponseBody
-    public List<User> getAllUsers() {
-        return greetingsService.getAllUsers();
-    }
+    // @GetMapping("/user")
+    // @ResponseBody
+    // public List<User> getAllUsers() {
+    //     return greetingsService.getAllUsers();
+    // }
 
-    @GetMapping("/user/{id}")
-    @ResponseBody
-    public User getUser(@PathVariable String id) throws EntityNotFoundException {
-        return greetingsService.getUser(id);
-    }
+    // @GetMapping("/user/{id}")
+    // @ResponseBody
+    // public User getUser(@PathVariable String id) throws EntityNotFoundException {
+    //     return greetingsService.getUser(id);
+    // }
 
-    @PostMapping("/user")
-    @ResponseBody
-    public User createUser(@RequestBody User user) {
-        return greetingsService.saveUser(user);
-    }
+    // @PostMapping("/user")
+    // @ResponseBody
+    // public User createUser(@RequestBody User user) {
+    //     return greetingsService.saveUser(user);
+    // }
 
-    @PutMapping("/user/{id}")
-    @ResponseBody
-    public User updateUser(@PathVariable String id, @RequestBody User user) throws EntityNotFoundException {
-        return greetingsService.updateUser(id, user);
-    }
+    // @PutMapping("/user/{id}")
+    // @ResponseBody
+    // public User updateUser(@PathVariable String id, @RequestBody User user) throws EntityNotFoundException {
+    //     return greetingsService.updateUser(id, user);
+    // }
 
-    @DeleteMapping("/user/{id}")
-    @ResponseBody
-    public void deleteUser(@PathVariable String id) throws EntityNotFoundException {
-        greetingsService.deleteUser(id);
-    }
+    // @DeleteMapping("/user/{id}")
+    // @ResponseBody
+    // public void deleteUser(@PathVariable String id) throws EntityNotFoundException {
+    //     greetingsService.deleteUser(id);
+    // }
 
-    @GetMapping("/cv")
-    @ResponseBody
-    public List<CV> getAllCVs() {
-        return greetingsService.getAllCVs();
-    }
+    // @GetMapping("/cv")
+    // @ResponseBody
+    // public List<CV> getAllCVs() {
+    //     return greetingsService.getAllCVs();
+    // }
 
-    @GetMapping("/cv/{id}")
-    @ResponseBody
-    public CV getCV(@PathVariable String id) throws EntityNotFoundException {
-        return greetingsService.getCV(id);
-    }
+    // @GetMapping("/cv/{id}")
+    // @ResponseBody
+    // public CV getCV(@PathVariable String id) throws EntityNotFoundException {
+    //     return greetingsService.getCV(id);
+    // }
 
-    @PostMapping("/cv")
-    @ResponseBody
-    public CV createCV(@RequestBody CV cv) {
-        return greetingsService.saveCV(cv);
-    }
+    // @PostMapping("/cv")
+    // @ResponseBody
+    // public CV createCV(@RequestBody CV cv) {
+    //     return greetingsService.saveCV(cv);
+    // }
 
-    @PutMapping("/cv/{id}")
-    @ResponseBody
-    public CV updateCV(@PathVariable String id, @RequestBody CV cv) throws EntityNotFoundException {
-        return greetingsService.updateCV(id, cv);
-    }
+    // @PutMapping("/cv/{id}")
+    // @ResponseBody
+    // public CV updateCV(@PathVariable String id, @RequestBody CV cv) throws EntityNotFoundException {
+    //     return greetingsService.updateCV(id, cv);
+    // }
 
-    @DeleteMapping("/cv/{id}")
-    @ResponseBody
-    public void deleteCV(@PathVariable String id) throws EntityNotFoundException {
-        greetingsService.deleteCV(id);
-    }
+    // @DeleteMapping("/cv/{id}")
+    // @ResponseBody
+    // public void deleteCV(@PathVariable String id) throws EntityNotFoundException {
+    //     greetingsService.deleteCV(id);
+    // }
 
-    @GetMapping("/job")
-    @ResponseBody
-    public List<Job> getAllJobs() {
-        return greetingsService.getAllJobs();
-    }
-
-    @GetMapping("/job/{id}")
-    @ResponseBody
-    public Job getJob(@PathVariable String id) throws EntityNotFoundException {
-        return greetingsService.getJob(id);
-    }
-
-    @PostMapping("/job")
-    @ResponseBody
-    public Job createJob(@RequestBody Job job) {
-        return greetingsService.saveJob(job);
-    }
-
-    @PutMapping("/job/{id}")
-    @ResponseBody
-    public Job updateJob(@PathVariable String id, @RequestBody Job job) throws EntityNotFoundException {
-        return greetingsService.updateJob(id, job);
-    }
-
-    @DeleteMapping("/job/{id}")
-    @ResponseBody
-    public void deleteJob(@PathVariable String id) throws EntityNotFoundException {
-        greetingsService.deleteJob(id);
-    }
-
-    @GetMapping("/employer")
-    @ResponseBody
-    public List<Employer> getAllEmployers() {
-        return greetingsService.getAllEmployers();
-    }
-
-    @GetMapping("/employer/{id}")
-    @ResponseBody
-    public Employer getEmployer(@PathVariable String id) throws EntityNotFoundException {
-        return greetingsService.getEmployer(id);
-    }
-
-    @PostMapping("/employer")
-    @ResponseBody
-    public Employer createEmployer(@RequestBody Employer employer) {
-        return greetingsService.saveEmployer(employer);
-    }
-
-    @PutMapping("/employer/{id}")
-    @ResponseBody
-    public Employer updateEmployer(@PathVariable String id, @RequestBody Employer employer) throws EntityNotFoundException {
-        return greetingsService.updateEmployer(id, employer);
-    }
-
-    @DeleteMapping("/employer/{id}")
-    @ResponseBody
-    public void deleteEmployer(@PathVariable String id) throws EntityNotFoundException {
-        greetingsService.deleteEmployer(id);
-    }
-
-    @GetMapping("/tags")
-    @ResponseBody
-    public List<Tag> getAllTags() {
-        return greetingsService.getAllTags();
-    }
     
-    @GetMapping("/recommendjobs")
-    @ResponseBody
-    public List<Job> getRecommendedJobs(@RequestParam(name="id", required=true) String id) {
-        return greetingsService.getRecommendedJobs(id);
-    }
 
-    @GetMapping("/bestcandidates")
-    @ResponseBody
-    public List<User> getBestCandidates(@RequestParam(name="id", required=true) String id) {
-        return greetingsService.getBestCandidates(id);
-    }
+    // @GetMapping("/employer")
+    // @ResponseBody
+    // public List<Employer> getAllEmployers() {
+    //     return greetingsService.getAllEmployers();
+    // }
 
-    /*
+    // @GetMapping("/employer/{id}")
+    // @ResponseBody
+    // public Employer getEmployer(@PathVariable String id) throws EntityNotFoundException {
+    //     return greetingsService.getEmployer(id);
+    // }
+
+    // @PostMapping("/employer")
+    // @ResponseBody
+    // public Employer createEmployer(@RequestBody Employer employer) {
+    //     return greetingsService.saveEmployer(employer);
+    // }
+
+    // @PutMapping("/employer/{id}")
+    // @ResponseBody
+    // public Employer updateEmployer(@PathVariable String id, @RequestBody Employer employer) throws EntityNotFoundException {
+    //     return greetingsService.updateEmployer(id, employer);
+    // }
+
+    // @DeleteMapping("/employer/{id}")
+    // @ResponseBody
+    // public void deleteEmployer(@PathVariable String id) throws EntityNotFoundException {
+    //     greetingsService.deleteEmployer(id);
+    // }
+
+    // @GetMapping("/tags")
+    // @ResponseBody
+    // public List<Tag> getAllTags() {
+    //     return greetingsService.getAllTags();
+    // }
+    
+    // @GetMapping("/recommendjobs")
+    // @ResponseBody
+    // public List<Job> getRecommendedJobs(@RequestParam(name="id", required=true) String id) {
+    //     return greetingsService.getRecommendedJobs(id);
+    // }
+
+    // @GetMapping("/bestcandidates")
+    // @ResponseBody
+    // public List<User> getBestCandidates(@RequestParam(name="id", required=true) String id) {
+    //     return greetingsService.getBestCandidates(id);
+    // }
+
+    // a /*
     @GetMapping("/hello-world")
     @ResponseBody
     public Greeting sayHello(@RequestParam(name="name", required=false, defaultValue="Stranger") String name) {
@@ -194,5 +166,5 @@ public class GreetingsController {
     public void deleteGreeting(@PathVariable String id) throws EntityNotFoundException {
         greetingsService.deleteGreeting(id);
     }
-    */
+    // */
 }
