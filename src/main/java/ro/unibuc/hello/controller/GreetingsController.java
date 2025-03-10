@@ -19,6 +19,7 @@ public class GreetingsController {
     @Autowired
     private GreetingsService greetingsService;
 
+    /* 
     @GetMapping("/user")
     @ResponseBody
     public List<User> getAllUsers() {
@@ -156,8 +157,8 @@ public class GreetingsController {
     public List<User> getBestCandidates(@RequestParam(name="id", required=true) String id) {
         return greetingsService.getBestCandidates(id);
     }
-
-    /*
+    */
+    
     @GetMapping("/hello-world")
     @ResponseBody
     public Greeting sayHello(@RequestParam(name="name", required=false, defaultValue="Stranger") String name) {
@@ -176,7 +177,6 @@ public class GreetingsController {
         return greetingsService.getAllGreetings();
     }
 
-
     @PostMapping("/greetings")
     @ResponseBody
     public Greeting createGreeting(@RequestBody Greeting greeting) {
@@ -194,5 +194,4 @@ public class GreetingsController {
     public void deleteGreeting(@PathVariable String id) throws EntityNotFoundException {
         greetingsService.deleteGreeting(id);
     }
-    */
 }

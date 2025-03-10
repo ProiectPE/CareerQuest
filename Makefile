@@ -7,7 +7,7 @@ default: build
 
 clean:
 	# Remove the build folder
-	rm -rf build
+	sudo rm -rf build
 	
 	# Remove the builder image and service image
 	docker rmi $(BUILDER_TAG) || true

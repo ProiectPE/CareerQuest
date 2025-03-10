@@ -1,0 +1,13 @@
+#GET http://localhost:8080/users
+
+@postUsername = bagsylina
+@postPassword = 12345678
+@postEmail = fabian@bagsylina.com
+POST http://localhost:8080/user
+Content-Type: application/json
+
+{
+    "username": "{{postUsername}}",
+    "password": "{{postPassword}}",
+    "email": "{{postEmail}}"
+}
