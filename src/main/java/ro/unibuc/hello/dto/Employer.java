@@ -1,6 +1,6 @@
 package main.java.ro.unibuc.hello.dto;
 
-public class Employee {
+public class Employer {
     private String id;
     private String name;
     private String email;
