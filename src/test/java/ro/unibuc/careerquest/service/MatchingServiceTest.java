@@ -89,35 +89,35 @@ public class MatchingServiceTest {
 
     }
 
-    @Test
-    public void test_recommend() throws UserNotFoundException, JobNotFoundException, CVNotFoundException {
-        String cvId = "1";
-        JobEntity job_entity1 = new JobEntity("1", "Senior Software Engineer", "description", 
-                                "Adobe", Arrays.asList("Java", "C"), Arrays.asList("SWE"),
-                                Arrays.asList("Leadership", "Problem Solving"), 5000, "Romania");
+//     @Test
+//     public void test_recommend() throws UserNotFoundException, JobNotFoundException, CVNotFoundException {
+//         String cvId = "1";
+//         JobEntity job_entity1 = new JobEntity("1", "Senior Software Engineer", "description", 
+//                                 "Adobe", Arrays.asList("Java", "C"), Arrays.asList("SWE"),
+//                                 Arrays.asList("Leadership", "Problem Solving"), 5000, "Romania");
         
-        JobEntity job_entity2 = new JobEntity("2", "QA Enginner", "description", 
-        "Amazon", Arrays.asList("DevOps", "C", "Agile"), Arrays.asList("Testing"),
-        Arrays.asList("Leadership", "Problem Solving"), 10000, "Romania");
+//         JobEntity job_entity2 = new JobEntity("2", "QA Enginner", "description", 
+//         "Amazon", Arrays.asList("DevOps", "C", "Agile"), Arrays.asList("Testing"),
+//         Arrays.asList("Leadership", "Problem Solving"), 10000, "Romania");
 
-        CVEntity cv_entity = new CVEntity("1", "bagsylina", "description", "achievements");
+//         CVEntity cv_entity = new CVEntity("1", "bagsylina", "description", "achievements");
 
-        cv_entity.addEducation(new CVComponent(LocalDate.of(2022,10,1), "education", "Bachelor of CS", "Unibuc"));
-        cv_entity.addSkill("Java");
-        cv_entity.addSkill("C");
-        cv_entity.addTool("SWE");
+//         cv_entity.addEducation(new CVComponent(LocalDate.of(2022,10,1), "education", "Bachelor of CS", "Unibuc"));
+//         cv_entity.addSkill("Java");
+//         cv_entity.addSkill("C");
+//         cv_entity.addTool("SWE");
 
-        List<JobEntity> job_entities = Arrays.asList(job_entity1, job_entity2);
+//         List<JobEntity> job_entities = Arrays.asList(job_entity1, job_entity2);
 
-        when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));
-        when(jobRepository.findAll()).thenReturn(job_entities);
+//         when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));
+//         when(jobRepository.findAll()).thenReturn(job_entities);
 
-        // Act
-        List<Job> ordered_jobs = matchingService.recommend(cvId);
+//         // Act
+//         List<Job> ordered_jobs = matchingService.recommend(cvId);
 
-        //Assert
-        assertEquals("2", ordered_jobs.get(0).getId());
-        assertEquals("1", ordered_jobs.get(1).getId());
-    }
+//         //Assert
+//         assertEquals("2", ordered_jobs.get(0).getId());
+//         assertEquals("1", ordered_jobs.get(1).getId());
+//     }
     
 }

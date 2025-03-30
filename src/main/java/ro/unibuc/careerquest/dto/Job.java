@@ -27,7 +27,6 @@ public class Job {
         this.abilities = (abilities != null) ? new ArrayList<>(abilities) : new ArrayList<>();
         this.domains = (domains != null) ? new ArrayList<>(domains) : new ArrayList<>();
         this.characteristics = (characteristics != null) ? new ArrayList<>(characteristics) : new ArrayList<>();
-        this.characteristics = new ArrayList<>(characteristics);
         this.salary = salary;
         this.location = location;
     }
@@ -46,9 +45,9 @@ public class Job {
         this.title = e.getTitle();
         this.description = e.getDescription();
         this.employer = e.getEmployer();
-        this.abilities = new ArrayList<>(e.getAbilities());
-        this.domains = new ArrayList<>(e.getDomains());
-        this.characteristics = new ArrayList<>(e.getCharacteristics());
+        this.abilities = (e.getAbilities() != null) ? new ArrayList<>(e.getAbilities()) : new ArrayList<>();
+        this.domains = (e.getDomains() != null) ? new ArrayList<>(e.getDomains()) : new ArrayList<>();
+        this.characteristics = (e.getCharacteristics() != null) ? new ArrayList<>(e.getCharacteristics()) : new ArrayList<>();    
         this.salary = e.getSalary();
         this.location = e.getLocation();
     }
