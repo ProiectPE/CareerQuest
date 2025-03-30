@@ -24,8 +24,9 @@ public class Job {
         this.title = title;
         this.description = description;
         this.employer = employer;
-        this.abilities = new ArrayList<>(abilities);
-        this.domains = new ArrayList<>(domains);
+        this.abilities = (abilities != null) ? new ArrayList<>(abilities) : new ArrayList<>();
+        this.domains = (domains != null) ? new ArrayList<>(domains) : new ArrayList<>();
+        this.characteristics = (characteristics != null) ? new ArrayList<>(characteristics) : new ArrayList<>();
         this.characteristics = new ArrayList<>(characteristics);
         this.salary = salary;
         this.location = location;

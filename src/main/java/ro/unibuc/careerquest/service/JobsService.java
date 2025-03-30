@@ -1,4 +1,3 @@
-
 package ro.unibuc.careerquest.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,9 @@ public class JobsService {
     
     @Autowired
     private CVRepository cvRepository;
+
+    @Autowired
+    private EmployerRepository employerRepository;
 
     private final AtomicLong counter = new AtomicLong();
     private final AtomicLong appCounter = new AtomicLong();

@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ro.unibuc.careerquest.dto.Job;
 import ro.unibuc.careerquest.dto.JobContent;
+import ro.unibuc.careerquest.data.JobEntity;
 import ro.unibuc.careerquest.dto.Application;
 import ro.unibuc.careerquest.data.ApplicationEntity;
 import ro.unibuc.careerquest.exception.EntityNotFoundException;
 import ro.unibuc.careerquest.service.JobsService;
+
 import ro.unibuc.careerquest.exception.CVNotFoundException;
 import ro.unibuc.careerquest.exception.UserNotFoundException;
 import ro.unibuc.careerquest.exception.AlreadyAppliedException;
@@ -58,7 +60,7 @@ public class JobsController {
     @PostMapping("/job")
     @ResponseBody
     public Job createJob(@RequestBody JobContent job,String employerId) {
-        return jobsService.createJob(job,employerId);
+        return jobsService.createJob(job);
     }
 
     @PutMapping("/job/{id}")
