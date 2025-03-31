@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.data.annotation.Id;
 
 public class EmployerEntity {
@@ -15,8 +16,10 @@ public class EmployerEntity {
     private String email;
     private String phone;
     private String company;
-    private LocalDate lastPaymentDate;
     private boolean premium;
+    private LocalDate lastPaymentDate;
+    
+    
 
     public EmployerEntity() {}
 

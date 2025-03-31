@@ -8,8 +8,10 @@ public class Employer {
     private String email;
     private String phone;
     private String company;
-    private LocalDate lastPaymentDate;
     private boolean premium;
+    private LocalDate lastPaymentDate;
+    
+    
 
     public Employer() {}
 

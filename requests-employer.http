@@ -9,6 +9,8 @@ GET http://localhost:8080/employer/1
 @postEmployerEmail = john.doe@example.com
 @postEmployerPhone = +40722123456
 @postEmployerCompany = TechCorp
+@postEmployerDate = 2025-01-13  
+
 POST http://localhost:8080/employer
 Content-Type: application/json
 
@@ -16,9 +18,9 @@ Content-Type: application/json
     "name": "{{postEmployerName}}",
     "email": "{{postEmployerEmail}}",
     "phone": "{{postEmployerPhone}}",
-    "company": "{{postEmployerCompany}}"
+    "company": "{{postEmployerCompany}}",
+    "lastPaymentDate": "{{postEmployerDate}}"
 }
-
 ### Get all the jobs posted by an employer (ex: employer with id=1 )
 GET http://localhost:8080/jobs/employer/1
 

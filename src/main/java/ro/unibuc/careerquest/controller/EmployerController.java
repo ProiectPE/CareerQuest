@@ -1,3 +1,4 @@
+//EmployerController
 package ro.unibuc.careerquest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,11 @@ import ro.unibuc.careerquest.exception.EntityNotFoundException;
 //import ro.unibuc.careerquest.service.GreetingsService;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import ro.unibuc.careerquest.exception.EntityNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -62,6 +68,12 @@ public class EmployerController {
     @ResponseBody
     public Employer payForPremium(@PathVariable String id) {
         return empsService.updatePayment(id);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
 }

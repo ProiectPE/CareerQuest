@@ -1,3 +1,4 @@
+//EmployerService
 package ro.unibuc.careerquest.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class EmployerService {
     public List<Employer> getAllEmployers() {
         List<EmployerEntity> entities = employerRepository.findAll();
         return entities.stream()
-                .map(entity -> new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(), entity.getCompany(),null,entity.isPremium()))
+                .map(entity -> new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(), entity.getCompany(),entity.getLastPaymentDate(),entity.isPremium()))
                 .collect(Collectors.toList());
     }
 
@@ -58,8 +59,10 @@ public class EmployerService {
         entity.setCompany(employer.getCompany());
         entity.setEmail(employer.getEmail());
         entity.setPhone(employer.getPhone());
+        entity.setLastPaymentDate(employer.getLastPaymentDate());
+        entity.setPremium(employer.isPremium());
         employerRepository.save(entity);
-        return new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(),entity.getCompany(),null,false);
+        return new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(),entity.getCompany(),entity.getLastPaymentDate(),entity.isPremium());
     }
 /*
     public List<Employer> saveAll(List<Employer> employers) {

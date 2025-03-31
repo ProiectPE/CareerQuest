@@ -1,3 +1,4 @@
+//EmployerControllerTest
 package ro.unibuc.careerquest.controller;
 
 import static org.junit.Assert.assertTrue;
@@ -47,18 +48,34 @@ public class EmployerControllerTest {
     @Test
     public void test_getAllEmployers() throws Exception {
         List<Employer> employers = Arrays.asList(
-            new Employer("1", "Test Employer 1", "email1@email.com", "123456", "Company 1", LocalDate.now(), true),
-            new Employer("2", "Test Employer 2", "email2@email.com", "654321", "Company 2", LocalDate.now(), false)
+            new Employer("1", "Test Employer 1", "email1@email.com", "123456", "Company 1", LocalDate.parse("2025-01-13"), true),
+            new Employer("2", "Test Employer 2", "email2@email.com", "654321", "Company 2", LocalDate.now(), false),
+            new Employer("3", "Test Employer 3", "email3@email.com", "996324", "Company 3", LocalDate.now(), false),
+            new Employer("4", "Test Employer 4", "email4@email.com", "255256", "Company 4", LocalDate.now(), true)
+           
         );
 
         when(empsService.getAllEmployers()).thenReturn(employers);
 
         mockMvc.perform(get("/employer"))
+                .andDo(print());
+
+        mockMvc.perform(get("/employer"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("1"))
                 .andExpect(jsonPath("$[0].name").value("Test Employer 1"))
+                .andExpect(jsonPath("$[0].email").value("email1@email.com"))
+                .andExpect(jsonPath("$[0].phone").value("123456"))
+                .andExpect(jsonPath("$[0].company").value("Company 1"))
+                //.andExpect(jsonPath("$[0].lastPaymentDate").value(LocalDate.parse("2025-01-13").toString()))
+                .andExpect(jsonPath("$[0].premium").value(true))
+
                 .andExpect(jsonPath("$[1].id").value("2"))
-                .andExpect(jsonPath("$[1].name").value("Test Employer 2"));
+                .andExpect(jsonPath("$[1].name").value("Test Employer 2"))
+                .andExpect(jsonPath("$[2].id").value("3"))
+                .andExpect(jsonPath("$[2].name").value("Test Employer 3"))
+                .andExpect(jsonPath("$[3].id").value("4"))
+                .andExpect(jsonPath("$[3].name").value("Test Employer 4"));
     }
 
     @Test
