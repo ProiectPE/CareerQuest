@@ -67,15 +67,32 @@ public class EmployerControllerTest {
                 .andExpect(jsonPath("$[0].email").value("email1@email.com"))
                 .andExpect(jsonPath("$[0].phone").value("123456"))
                 .andExpect(jsonPath("$[0].company").value("Company 1"))
-                //.andExpect(jsonPath("$[0].lastPaymentDate").value(LocalDate.parse("2025-01-13").toString()))
+               // .andExpect(jsonPath("$[0].lastPaymentDate").value("2025-01-13").toString()))
                 .andExpect(jsonPath("$[0].premium").value(true))
 
                 .andExpect(jsonPath("$[1].id").value("2"))
                 .andExpect(jsonPath("$[1].name").value("Test Employer 2"))
+                .andExpect(jsonPath("$[1].email").value("email2@email.com"))
+                .andExpect(jsonPath("$[1].phone").value("654321"))
+                .andExpect(jsonPath("$[1].company").value("Company 2"))
+               // .andExpect(jsonPath("$[0].lastPaymentDate").value("2025-01-13").toString()))
+                .andExpect(jsonPath("$[1].premium").value(false))
+
                 .andExpect(jsonPath("$[2].id").value("3"))
                 .andExpect(jsonPath("$[2].name").value("Test Employer 3"))
+                .andExpect(jsonPath("$[2].email").value("email3@email.com"))
+                .andExpect(jsonPath("$[2].phone").value("996324"))
+                .andExpect(jsonPath("$[2].company").value("Company 3"))
+               // .andExpect(jsonPath("$[2].lastPaymentDate").value
+                .andExpect(jsonPath("$[2].premium").value(false))
+
                 .andExpect(jsonPath("$[3].id").value("4"))
-                .andExpect(jsonPath("$[3].name").value("Test Employer 4"));
+                .andExpect(jsonPath("$[3].name").value("Test Employer 4"))
+                .andExpect(jsonPath("$[3].email").value("email4@email.com"))
+                .andExpect(jsonPath("$[3].phone").value("255256"))
+                .andExpect(jsonPath("$[3].company").value("Company 4"))
+               // .andExpect(jsonPath("$[2].lastPaymentDate").value
+                .andExpect(jsonPath("$[3].premium").value(true));
     }
 
     @Test
