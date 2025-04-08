@@ -192,7 +192,7 @@ class UserServiceTest {
         
         //initialize update data
         User userUpdate = new User() ;
-        userUpdate.setBirthdate(LocalDate.of(2003,4,2));
+        userUpdate.setBirthdate(LocalDate.of(2003,12,2));
         userUpdate.setFirstName("Fabian");
         userUpdate.setLastName("Anghel");
         
@@ -200,7 +200,7 @@ class UserServiceTest {
         when(userRepository.findById(username)).thenReturn(Optional.of(userEntity));
         when(userRepository.findById(nonExistingUsername)).thenReturn(Optional.empty());
         when(userRepository.save(any(UserEntity.class))).thenReturn(new UserEntity(username, "Parola1@", null, 
-            "Fabian", "Anghel", LocalDate.of(2003, 4, 2), "user1@email.com", null));
+            "Fabian", "Anghel", LocalDate.of(2003, 12, 2), "user1@email.com", null));
        
         //update user
         User user = userService.updateUser(username, userUpdate);
@@ -212,7 +212,7 @@ class UserServiceTest {
         assertEquals("Fabian", user.getFirstName());
         assertEquals("Anghel", user.getLastName());
         assertEquals("Fabian Anghel", user.getName());
-        assertEquals(LocalDate.of(2003,4,2), user.getBirthdate());
+        assertEquals(LocalDate.of(2003,12,2), user.getBirthdate());
         assertEquals(21, user.getAge()); //to update on april 2nd
 
         //exception for nonexisting user

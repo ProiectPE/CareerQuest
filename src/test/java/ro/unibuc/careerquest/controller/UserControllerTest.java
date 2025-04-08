@@ -190,7 +190,7 @@ class UserControllerTest {
     @Test 
     void test_updateUser() throws Exception {
         String username = "user1";
-        User updatedUser = new User(username, "descriere", "Fabian", "Anghel", LocalDate.of(2003, 4, 2), "user1@email.com", null);
+        User updatedUser = new User(username, "descriere", "Fabian", "Anghel", LocalDate.of(2003, 12, 2), "user1@email.com", null);
         when(userService.updateUser(eq(username), any(User.class))).thenReturn(updatedUser);
 
         mockMvc.perform(put("/user/{id}", username)
@@ -201,7 +201,7 @@ class UserControllerTest {
             .andExpect(jsonPath("$.description").value("descriere"))
             .andExpect(jsonPath("$.firstName").value("Fabian"))
             .andExpect(jsonPath("$.lastName").value("Anghel"))
-            .andExpect(jsonPath("$.birthdate").value("2003-04-02"))
+            .andExpect(jsonPath("$.birthdate").value("2003-12-02"))
             .andExpect(jsonPath("$.age").value("21")) //change to 22 next week
             .andExpect(jsonPath("$.email").value("user1@email.com"));
     }
