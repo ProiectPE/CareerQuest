@@ -30,5 +30,11 @@ pipeline {
                 sh "git push https://$GITHUB_TOKEN@github.com/${DOCKER_PASSWORD_USR}/service.git ${env.IMAGE_TAG}"
             }
         }
+
+        stage('Add image tag to docker') {
+            steps {
+                sh "IMAGE_TAG=${env.IMAGE_TAG} docker compose up -d hello mongo"
+            }
+        }
     }
 }

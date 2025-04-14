@@ -1,7 +1,7 @@
 services:
   hello:
-    image: hello-img
-    build: .
+    image: anastasiastefanescu1618/careerquest2-img:${IMAGE_TAG}
+    # build: .
     ports:
       - 8080:8080
       # Port for debug
