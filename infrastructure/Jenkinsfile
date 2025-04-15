@@ -25,9 +25,15 @@ pipeline {
                     env.PATCH_VERSION = sh([script: 'git tag | sort --version-sort | tail -1 | cut -d . -f 3', returnStdout: true]).trim()
                     env.IMAGE_TAG = "${env.MAJOR_VERSION}.\$((${env.MINOR_VERSION} + 1)).${env.PATCH_VERSION}"
                 }
-                sh "docker build -t anastasiastefanescu1618/careerquest2-img:${MAJOR_VERSION}.\$((${MINOR_VERSION} + 1)).${PATCH_VERSION} ."
+                sh "docker build -t anastasiastefanescu1618/careerquest2-img:${env.IMAGE_TAG} ."
+                sh "docker login docker.io -u anastasiastefanescu1618 -p $env.DOCKER_PASSWORD_PSW"
+                sh "docker push anastasiastefanescu1618/careerquest2-img:${env.IMAGE_TAG}"
                 sh "git tag ${env.IMAGE_TAG}"
-                sh "git push https://$GITHUB_TOKEN@github.com/${DOCKER_PASSWORD_USR}/service.git ${env.IMAGE_TAG}"
+                sh "git push https://${env.GITHUB_TOKEN_PSW}@github.com/ProiectPE/CareerQuest.git ${env.IMAGE_TAG}"
+
+                // sh "docker build -t anastasiastefanescu1618/careerquest2-img:${MAJOR_VERSION}.\$((${MINOR_VERSION} + 1)).${PATCH_VERSION} ."
+                // sh "git tag ${env.IMAGE_TAG}"
+                // sh "git push https://$GITHUB_TOKEN@github.com/${DOCKER_PASSWORD_USR}/service.git ${env.IMAGE_TAG}"
             }
         }
 
