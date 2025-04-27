@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ro.unibuc.careerquest.data.ApplicationEntity;
 import ro.unibuc.careerquest.data.ApplicationRepository;
@@ -32,6 +33,10 @@ import ro.unibuc.careerquest.exception.AlreadyAppliedException;
 import ro.unibuc.careerquest.exception.EntityNotFoundException;
 import ro.unibuc.careerquest.exception.JobNotFoundException;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+
 @ExtendWith(SpringExtension.class)
 public class JobsServiceTest {
     @Mock
@@ -46,8 +51,18 @@ public class JobsServiceTest {
     @Mock 
     private CVRepository cvRepository;
 
-    @InjectMocks
-    private JobsService jobsService = new JobsService();
+
+    @MockBean  // Use @MockBean to mock the MeterRegistry and let Spring handle the injection
+    private MeterRegistry meterRegistry;
+
+    // Let Spring inject the real dependencies into JobsService
+    @Autowired
+    private JobsService jobsService;
+
+    // @InjectMocks
+    // private JobsService jobsService;
+
+
 
     @BeforeEach
     void setUp() {
