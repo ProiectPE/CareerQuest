@@ -32,6 +32,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+
 @Component
 public class JobsService {
 
@@ -55,6 +59,16 @@ public class JobsService {
     private static final String helloTemplate = "Hello, %s!";
     private static final String informationTemplate = "%s : %s!";
     private static final int FREE_POST_LIMIT = 5;
+
+    private final Counter jobPostedCounter;
+
+    public JobsService(MeterRegistry registry) {
+        this.jobPostedCounter = registry.counter("jobs.posted.count");
+
+        // Gauges: monitored continuously
+        Gauge.builder("jobs.available.count", counter, AtomicLong::get)
+             .register(registry);
+    }
 
     public List<Job> getAllJobs() {
         List<JobEntity> entities = jobDatabase.findAll();
@@ -91,6 +105,10 @@ public class JobsService {
         JobEntity entity = new JobEntity(Long.toString(counter.incrementAndGet()), job); // implemented constructor for ease
 
         jobDatabase.save(entity);
+
+        counter.incrementAndGet();          // Update atomic value for gauge
+        jobPostedCounter.increment();       // Update Prometheus counter
+
         return new Job(entity); // implemented constructor for ease
     }
 
