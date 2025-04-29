@@ -22,7 +22,7 @@ public class EmployerService {
     @Autowired
     private EmployerRepository employerRepository;
     private MeterRegistry metricsRegistry;
-    
+
     private final AtomicLong counter = new AtomicLong();
     private static final String helloTemplate = "Hello, %s!";
     private static final String informationTemplate = "%s : %s!";
@@ -61,6 +61,9 @@ public class EmployerService {
         entity.setEmail(employer.getEmail());
         entity.setPhone(employer.getPhone());
         employerRepository.save(entity);
+
+        metricsRegistry.counter("employer.creatNumber").increment(counter.incrementAndGet());
+
         return new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(),entity.getCompany(),null,false);
     }
 /*
@@ -101,6 +104,9 @@ public class EmployerService {
         EmployerEntity entity = employerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(id)));
         employerRepository.delete(entity);
+
+        metricsRegistry.counter("employer.deleteNumber").increment(counter.incrementAndGet());
+
         return "Employer by id=" + id + " was deleted.";
     }
 
@@ -115,6 +121,9 @@ public class EmployerService {
         entity.setLastPaymentDate(LocalDate.now());
         entity.setPremium(true);
         employerRepository.save(entity);
+
+        metricsRegistry.counter("updatePayment.number").increment(counter.incrementAndGet());
+
         return new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(),entity.getCompany(),entity.getLastPaymentDate(),entity.isPremium());
   
     }
