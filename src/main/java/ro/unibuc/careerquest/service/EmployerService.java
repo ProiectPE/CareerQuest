@@ -1,5 +1,6 @@
 package ro.unibuc.careerquest.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,8 @@ public class EmployerService {
 
     @Autowired
     private EmployerRepository employerRepository;
-
+    private MeterRegistry metricsRegistry;
+    
     private final AtomicLong counter = new AtomicLong();
     private static final String helloTemplate = "Hello, %s!";
     private static final String informationTemplate = "%s : %s!";
