@@ -35,6 +35,7 @@ import ro.unibuc.careerquest.exception.JobNotFoundException;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @ExtendWith(SpringExtension.class)
@@ -52,15 +53,15 @@ public class JobsServiceTest {
     private CVRepository cvRepository;
 
 
-    @MockBean  // Use @MockBean to mock the MeterRegistry and let Spring handle the injection
+    @Mock
     private MeterRegistry meterRegistry;
 
     // Let Spring inject the real dependencies into JobsService
-    @Autowired
-    private JobsService jobsService;
-
-    // @InjectMocks
+    // @Autowired
     // private JobsService jobsService;
+
+    @InjectMocks
+    private JobsService jobsService = new JobsService();
 
 
 
@@ -83,6 +84,9 @@ public class JobsServiceTest {
 
         when(jobDatabase.findAll()).thenReturn(jobs);
 
+        Timer getJobsTimer = mock(Timer.class);
+        when(metricsRegistry.timer(anyString())).thenReturn(getJobsTimer);
+
         List<Job> jobs_new = jobsService.getAllJobs();
 
         assertEquals(2, jobs_new.size());
@@ -96,6 +100,9 @@ public class JobsServiceTest {
         String jobId = "1";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
 
+        Counter getJobCounter = mock(Counter.class);
+        when(metricsRegistry.counter(anyString())).thenReturn(getJobCounter);
+
         Job job = jobsService.getJob(jobId);
 
         assertEquals("1", job.getId());
@@ -108,6 +115,9 @@ public class JobsServiceTest {
         String jobId = "1";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
 
+        Gauge existingJobs = mock(Gauge.class);
+        when(metricsRegistry.gauge(anyString())).thenReturn(existingJobs);
+
         jobsService.deleteJob(jobId);
 
         verify(jobDatabase, times(1)).delete(job_entity1);
@@ -117,6 +127,9 @@ public class JobsServiceTest {
     public void test_deleteNonExistingJob() {
         String jobId = "3";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.empty());
+
+        Gauge existingJobs = mock(Gauge.class);
+        when(metricsRegistry.gauge(anyString())).thenReturn(existingJobs);
 
         assertThrows(EntityNotFoundException.class, () -> jobsService.deleteJob(jobId));
     }
@@ -155,6 +168,9 @@ public class JobsServiceTest {
                 Arrays.asList("New Requirement 1", "New Requirement 2"), 8000, "New Location");
         when(jobDatabase.save(any(JobEntity.class))).thenReturn(job_entity1);
 
+        Gauge existingJobs = mock(Gauge.class);
+        when(metricsRegistry.gauge(anyString())).thenReturn(existingJobs);
+
         Job job = jobsService.createJob(jobContent);
 
         assertEquals("1", job.getId());
@@ -176,6 +192,9 @@ public class JobsServiceTest {
         cv_entity.addSkill("Java");
         cv_entity.addSkill("C");
         cv_entity.addTool("SWE");
+
+        Timer applyTimer = mock(Timer.class);
+        when(metricsRegistry.timer(anyString())).thenReturn(applyTimer);
     
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
         when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));
@@ -205,6 +224,9 @@ public class JobsServiceTest {
         cv_entity.addSkill("Java");
         cv_entity.addSkill("C");
         cv_entity.addTool("SWE");
+
+        Timer applyTimer = mock(Timer.class);
+        when(metricsRegistry.timer(anyString())).thenReturn(applyTimer);
     
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
         when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));

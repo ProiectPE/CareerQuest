@@ -36,6 +36,8 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 
+import java.util.concurrent.TimeUnit;
+
 @Component
 public class JobsService {
 
@@ -54,24 +56,28 @@ public class JobsService {
     @Autowired
     private EmployerRepository employerRepository;
 
+    @Autowired
+    private MeterRegistry metricsRegistry;
+
     private final AtomicLong counter = new AtomicLong();
     private final AtomicLong appCounter = new AtomicLong();
+
+    private final AtomicLong jobViewingsCounter = new AtomicLong();
+    private final AtomicLong existingJobsCounter = new AtomicLong();
+    private final AtomicLong existingApplicationCounter = new AtomicLong();
+
     private static final String helloTemplate = "Hello, %s!";
     private static final String informationTemplate = "%s : %s!";
     private static final int FREE_POST_LIMIT = 5;
 
-    private final Counter jobPostedCounter;
-
-    public JobsService(MeterRegistry registry) {
-        this.jobPostedCounter = registry.counter("jobs.posted.count");
-
-        // Gauges: monitored continuously
-        Gauge.builder("jobs.available.count", counter, AtomicLong::get)
-             .register(registry);
-    }
 
     public List<Job> getAllJobs() {
+        final long start =System.currentTimeMillis();
+
         List<JobEntity> entities = jobDatabase.findAll();
+        final long end =System.currentTimeMillis();
+        metricsRegistry.timer("get_all_jobs").record(end - start, TimeUnit.MILLISECONDS);
+
         return entities.stream()
                 .map(entity -> new Job(entity))
                 .collect(Collectors.toList());
@@ -93,6 +99,9 @@ public class JobsService {
     public Job getJob(String id) throws EntityNotFoundException {
         Optional<JobEntity> optionalEntity = jobDatabase.findById(id);
         JobEntity entity = optionalEntity.orElseThrow(() -> new EntityNotFoundException(id));
+
+        metricsRegistry.counter("job_viewing", id).increment(jobViewingsCounter.incrementAndGet());
+
         return new Job(entity); // implemented constructor for ease
     }
     
@@ -106,8 +115,7 @@ public class JobsService {
 
         jobDatabase.save(entity);
 
-        counter.incrementAndGet();          // Update atomic value for gauge
-        jobPostedCounter.increment();       // Update Prometheus counter
+        metricsRegistry.gauge("job_existing", existingJobsCounter.incrementAndGet())
 
         return new Job(entity); // implemented constructor for ease
     }
@@ -150,10 +158,14 @@ public class JobsService {
     public void deleteJob(String id) throws EntityNotFoundException {
         JobEntity entity = jobDatabase.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(id)));
+
+        metricsRegistry.gauge("job_existing", existingJobsCounter.decrementAndGet());
+        
         jobDatabase.delete(entity);
     }
 
     public void deleteAllJobs() {
+        metricsRegistry.gauge("job_existing", existingJobsCounter.set(0));
         jobDatabase.deleteAll();
     }
 
@@ -163,6 +175,8 @@ public class JobsService {
     }
 
     public Application jobApply(String jobId, String cvId) throws EntityNotFoundException, CVNotFoundException, UserNotFoundException, AlreadyAppliedException {
+        final long start = System.currentTimeMillis();
+        
         //get job
         JobEntity job = jobDatabase.findById(jobId)
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(jobId)));
@@ -192,6 +206,12 @@ public class JobsService {
                 user.getBirthdate(), user.getEmail(), user.getPhone());
 
         Application fullApp = new Application(app.getId(), jobData, userData, cvData);
+
+        metricsRegistry.counter("applications_existing").increment(existingApplicationCounter.incrementAndGet());
+
+        final long end = System.currentTimeMillis();
+
+        metricsRegistry.timer("apply_time").record(end - start, TimeUnit.MILLISECONDS);
 
         return fullApp;
     }

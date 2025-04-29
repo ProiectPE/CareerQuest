@@ -1,0 +1,4 @@
+Using LitmusChaos
+
+    kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v3.0.0.yaml
+    kubectl get pods -n litmus
