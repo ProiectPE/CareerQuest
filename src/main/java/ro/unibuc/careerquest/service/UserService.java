@@ -2,6 +2,7 @@ package ro.unibuc.careerquest.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import ro.unibuc.careerquest.exception.InvalidEmailException;
 import ro.unibuc.careerquest.exception.InvalidPasswordException;
 import ro.unibuc.careerquest.exception.UserNotFoundException;
 import ro.unibuc.careerquest.exception.UsernameTakenException;
+import io.micrometer.core.instrument.MeterRegistry;
 
 @Component
 public class UserService {
@@ -36,7 +38,11 @@ public class UserService {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    @Autowired
+    private MeterRegistry metricsRegistry;
+
     private final AtomicLong counter = new AtomicLong();
+    private final AtomicLong userCounter = new AtomicLong();
 
     private static final String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     private static final Pattern emailPattern = Pattern.compile(emailRegex);
@@ -47,14 +53,24 @@ public class UserService {
     private static final Pattern specialCharPattern = Pattern.compile("[^a-zA-Z0-9]");
 
     public List<User> getAllUsers() {
+        final long startTime = System.currentTimeMillis();
         List<UserEntity> users = userRepository.findAll();
+        final long endTime = System.currentTimeMillis();
+
+        metricsRegistry.timer("time_get_all_users").record(endTime - startTime, TimeUnit.MILLISECONDS);
+
         return users.stream()
                 .map(user -> new User(user))
                 .collect(Collectors.toList());
     }
 
     public List<User> getAllUsersByName(String name) {
+        final long startTime = System.currentTimeMillis();
         List<UserEntity> users = userRepository.findByFullNameContaining(name);
+        final long endTime = System.currentTimeMillis();
+
+        metricsRegistry.timer("time_get_users_by_name").record(endTime - startTime, TimeUnit.MILLISECONDS);
+
         return users.stream()
                 .map(user -> new User(user))
                 .collect(Collectors.toList());
@@ -63,6 +79,9 @@ public class UserService {
     public User getUser(String username) throws UserNotFoundException {
         Optional<UserEntity> optionalUser = userRepository.findById(username);
         UserEntity user = optionalUser.orElseThrow(() -> new UserNotFoundException(username));
+
+        metricsRegistry.counter("nr_profile_views", "username", username).increment();
+
         return new User(user);
     }
 
@@ -90,6 +109,8 @@ public class UserService {
         //create user in database
         UserEntity user = new UserEntity(credentials.getUsername(), credentials.getPassword(), credentials.getEmail());
         userRepository.save(user);
+
+        metricsRegistry.gauge("nr_of_users", userCounter.incrementAndGet());
         
         return new User(user.getUsername(), user.getEmail());
     }
@@ -149,6 +170,8 @@ public class UserService {
     public void deleteUser(String username) throws UserNotFoundException {
         Optional<UserEntity> optionalUser = userRepository.findById(username);
         UserEntity user = optionalUser.orElseThrow(() -> new UserNotFoundException(username));
+
+        metricsRegistry.gauge("nr_of_users", userCounter.decrementAndGet());
 
         userRepository.delete(user);
     }

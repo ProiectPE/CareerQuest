@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import ro.unibuc.careerquest.data.ApplicationEntity;
 import ro.unibuc.careerquest.data.ApplicationRepository;
 import ro.unibuc.careerquest.data.CVComponent;
@@ -45,6 +47,9 @@ public class JobsServiceTest {
 
     @Mock 
     private CVRepository cvRepository;
+
+    @Mock
+    private MeterRegistry metricsRegistry;
 
     @InjectMocks
     private JobsService jobsService = new JobsService();
@@ -168,7 +173,11 @@ public class JobsServiceTest {
         when(applicationRepository.findByJobIdAndUsername(jobId, username)).thenReturn(Optional.empty());
         when(applicationRepository.save(any(ApplicationEntity.class))).thenReturn(new ApplicationEntity("1", jobId, username, cvId));
 
+        Counter mockCounter = mock(Counter.class);
+        when(metricsRegistry.counter("nr_job_applications", "job", jobId)).thenReturn(mockCounter);
+
         Application app = jobsService.jobApply(jobId, cvId);
+        metricsRegistry.counter("nr_job_applications", "job", jobId).increment();
 
         assertEquals("1", app.getId());
         assertEquals("1", app.getJob().getId());

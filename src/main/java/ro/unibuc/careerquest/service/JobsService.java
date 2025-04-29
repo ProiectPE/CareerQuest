@@ -27,6 +27,8 @@ import ro.unibuc.careerquest.exception.AlreadyAppliedException;
 import ro.unibuc.careerquest.data.EmployerRepository;
 import ro.unibuc.careerquest.data.EmployerEntity;
 
+import io.micrometer.core.instrument.MeterRegistry;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +51,9 @@ public class JobsService {
 
     @Autowired
     private EmployerRepository employerRepository;
+
+    @Autowired
+    private MeterRegistry metricsRegistry;
 
     private final AtomicLong counter = new AtomicLong();
     private final AtomicLong appCounter = new AtomicLong();
@@ -174,6 +179,8 @@ public class JobsService {
                 user.getBirthdate(), user.getEmail(), user.getPhone());
 
         Application fullApp = new Application(app.getId(), jobData, userData, cvData);
+
+        metricsRegistry.counter("nr_job_applications", "job", jobId).increment();
 
         return fullApp;
     }

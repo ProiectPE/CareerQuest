@@ -9,6 +9,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+
+import org.mockito.Mockito;
 
 import ro.unibuc.careerquest.data.ApplicationEntity;
 import ro.unibuc.careerquest.data.ApplicationRepository;
@@ -29,6 +35,9 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -45,6 +54,9 @@ class UserServiceTest {
     @Mock
     private ApplicationRepository applicationRepository;
 
+    @Mock
+    private MeterRegistry metricsRegistry;
+
     @InjectMocks
     private UserService userService;
 
@@ -59,9 +71,21 @@ class UserServiceTest {
         List<UserEntity> userEntities = Arrays.asList(new UserEntity("user1", "Parola1@", "user1@email.com"), new UserEntity("user2", "Parola1@", "user2@email.com"));
         
         when(userRepository.findAll()).thenReturn(userEntities);
+
+        Timer mockTimer = mock(Timer.class);
+        when(metricsRegistry.timer("time_get_all_users")).thenReturn(mockTimer);
+
+        final long fakeStart = 100L;
+        final long fakeEnd = 300L;
         
         //get all users
+        final long startTime = fakeStart;
         List<User> users = userService.getAllUsers();
+        final long endTime = fakeEnd;
+
+        long duration = endTime - startTime;
+        metricsRegistry.timer("time_get_all_users")
+                    .record(duration, TimeUnit.MILLISECONDS);
 
         //verify data
         assertNotNull(users);
@@ -78,9 +102,21 @@ class UserServiceTest {
         List<UserEntity> userEntities = Arrays.asList(new UserEntity("user1", "Parola1@", null, "Fabian", "Anghel", null, "user1@email.com", null));
         
         when(userRepository.findByFullNameContaining(name)).thenReturn(userEntities);
+
+        Timer mockTimer = mock(Timer.class);
+        when(metricsRegistry.timer("time_get_users_by_name")).thenReturn(mockTimer);
+
+        final long fakeStart = 100L;
+        final long fakeEnd = 300L;
         
         //get all users with that name
+        final long startTime = fakeStart;
         List<User> users = userService.getAllUsersByName(name);
+        final long endTime = fakeEnd;
+
+        long duration = endTime - startTime;
+        metricsRegistry.timer("time_get_users_by_name")
+                    .record(duration, TimeUnit.MILLISECONDS);
 
         //verify data
         assertNotNull(users);
@@ -101,8 +137,12 @@ class UserServiceTest {
         when(userRepository.findById(username)).thenReturn(Optional.of(userEntity));
         when(userRepository.findById(nonExistingUsername)).thenReturn(Optional.empty());
 
+        Counter mockCounter = mock(Counter.class);
+        when(metricsRegistry.counter("nr_profile_views", "username", username)).thenReturn(mockCounter);
+
         //get user
         User user = userService.getUser(username);
+        metricsRegistry.counter("nr_profile_views", "username", username).increment();
 
         //verify data
         assertNotNull(user);
@@ -128,6 +168,8 @@ class UserServiceTest {
         
         when(userRepository.save(any(UserEntity.class))).thenReturn(new UserEntity("user1", "Parola1@", "user1@email.com"));
         when(userRepository.findById("usertaken")).thenReturn(Optional.of(userTakenEntity));
+
+        when(metricsRegistry.gauge("nr_of_users", 1)).thenReturn(1);
         
         //create user
         User user = userService.createUser(userData);
@@ -228,6 +270,9 @@ class UserServiceTest {
         
         when(userRepository.findById(username)).thenReturn(Optional.of(userEntity));
         when(userRepository.findById(nonExistingUsername)).thenReturn(Optional.empty());
+
+        when(metricsRegistry.gauge("nr_of_users", 1)).thenReturn(1);
+        when(metricsRegistry.gauge("nr_of_users", 0)).thenReturn(0);
 
         //delete user
         userService.deleteUser(username);

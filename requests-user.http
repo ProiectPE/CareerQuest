@@ -10,8 +10,8 @@ GET http://localhost:8080/users/Fabian
 ### Create a user
 @postUsername = bagsylina
 
-@postPassword = 12345678
-//@postPassword = Parola1#
+//@postPassword = 12345678
+@postPassword = Parola1#
 
 @postEmail = fabian@bagsylina.com
 POST http://localhost:8080/user
