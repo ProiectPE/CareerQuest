@@ -1,20 +1,38 @@
 groups:
   - name: AppAlerts
     rules:
-      - alert: WARNING-HighThroughput
-        expr: rate(hello_info_count_total[1m]) > 10
+      # - alert: WARNING-HighThroughput
+      #   expr: rate(hello_info_count_total[1m]) > 10
+      #   for: 10s
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: Increased info retrieval rate {{ $labels.value}} {{ $value }}
+      #     description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      # - alert: CRITICAL-HighThroughput
+      #   expr: rate(hello_info_count_total[1m]) > 50
+      #   for: 10s
+      #   labels:
+      #     severity: critical
+      #   annotations:
+      #     summary: Increased info retrieval rate {{ $labels.value}} {{ $value }}
+      #     description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: WARNING-HighThroughput-ProfileViews
+        expr: rate(nr_profile_views_total[1m]) > 1
         for: 10s
         labels:
           severity: warning
         annotations:
-          summary: Increased info retrieval rate {{ $labels.value}} {{ $value }}
-          description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
-      - alert: CRITICAL-HighThroughput
-        expr: rate(hello_info_count_total[1m]) > 50
+          summary: Increased info retrieval rate {{ $labels.value }} {{ $value }}
+          description: "A container has disappeared\n VALUE = {{ $value }}\n LABELS = {{ $labels }}"
+        
+      - alert: CRITICAL-HighThroughput-ProfileViews
+        expr: rate(nr_profile_views_total[1m]) > 10
         for: 10s
         labels:
-          severity: critical
+          severity: warning
         annotations:
-          summary: Increased info retrieval rate {{ $labels.value}} {{ $value }}
-          description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          summary: Increased info retrieval rate {{ $labels.value }} {{ $value }}
+          description: "A container has disappeared\n VALUE = {{ $value }}\n LABELS = {{ $labels }}"

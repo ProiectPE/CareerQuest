@@ -1,8 +1,17 @@
 groups:
   - name: CanaryAlerts
     rules:
-      - alert: WARNING-NoThroughout
-        expr: rate(hello_info_count_total[1m]) == 0
+      # - alert: WARNING-NoThroughout
+      #   expr: rate(hello_info_count_total[1m]) == 0
+      #   for: 10s
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: Increased info retrieval rate {{ $labels.value}} {{ $value }}
+      #     description: "There is no incoming canary traffic"
+
+      - alert: WARNING-NoThroughout-SearchUsers
+        expr: rate(time_get_users_by_name_seconds_count[1m]) == 0
         for: 10s
         labels:
           severity: warning
