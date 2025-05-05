@@ -21,6 +21,8 @@ public class EmployerService {
 
     @Autowired
     private EmployerRepository employerRepository;
+
+    @Autowired
     private MeterRegistry metricsRegistry;
 
     private final AtomicLong counter = new AtomicLong();
@@ -62,7 +64,7 @@ public class EmployerService {
         entity.setPhone(employer.getPhone());
         employerRepository.save(entity);
 
-        metricsRegistry.counter("employer.creatNumber").increment(counter.incrementAndGet());
+        metricsRegistry.counter("employerCreatNumber").increment();
 
         return new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(),entity.getCompany(),null,false);
     }
@@ -105,7 +107,7 @@ public class EmployerService {
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(id)));
         employerRepository.delete(entity);
 
-        metricsRegistry.counter("employer.deleteNumber").increment(counter.incrementAndGet());
+        metricsRegistry.counter("employerDeleteNumber").increment();
 
         return "Employer by id=" + id + " was deleted.";
     }
@@ -122,7 +124,7 @@ public class EmployerService {
         entity.setPremium(true);
         employerRepository.save(entity);
 
-        metricsRegistry.counter("updatePayment.number").increment(counter.incrementAndGet());
+        metricsRegistry.counter("updatePaymentNumber").increment();
 
         return new Employer(entity.getId(), entity.getName(),entity.getEmail(),entity.getPhone(),entity.getCompany(),entity.getLastPaymentDate(),entity.isPremium());
   
