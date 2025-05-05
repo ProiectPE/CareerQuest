@@ -37,6 +37,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.MeterRegistry;
+import java.util.concurrent.atomic.AtomicLong;
 
 @ExtendWith(SpringExtension.class)
 public class JobsServiceTest {
@@ -54,7 +55,7 @@ public class JobsServiceTest {
 
 
     @Mock
-    private MeterRegistry meterRegistry;
+    private MeterRegistry metricsRegistry;
 
     // Let Spring inject the real dependencies into JobsService
     // @Autowired
@@ -101,7 +102,8 @@ public class JobsServiceTest {
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
 
         Counter getJobCounter = mock(Counter.class);
-        when(metricsRegistry.counter(anyString())).thenReturn(getJobCounter);
+        //when(metricsRegistry.counter(anyString())).thenReturn(getJobCounter);
+        when(metricsRegistry.counter(anyString(), anyString())).thenReturn(getJobCounter);
 
         Job job = jobsService.getJob(jobId);
 
@@ -115,8 +117,8 @@ public class JobsServiceTest {
         String jobId = "1";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
 
-        Gauge existingJobs = mock(Gauge.class);
-        when(metricsRegistry.gauge(anyString())).thenReturn(existingJobs);
+        when(metricsRegistry.gauge("job_existing", 0)).thenReturn(0);
+        when(metricsRegistry.gauge("job_existing", 1)).thenReturn(1);
 
         jobsService.deleteJob(jobId);
 
@@ -128,8 +130,9 @@ public class JobsServiceTest {
         String jobId = "3";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.empty());
 
-        Gauge existingJobs = mock(Gauge.class);
-        when(metricsRegistry.gauge(anyString())).thenReturn(existingJobs);
+        //AtomicLong existingJobs = new AtomicLong(0);
+        when(metricsRegistry.gauge("job_existing", 1)).thenReturn(1);
+        when(metricsRegistry.gauge("job_existing", 0)).thenReturn(0);
 
         assertThrows(EntityNotFoundException.class, () -> jobsService.deleteJob(jobId));
     }
@@ -168,8 +171,8 @@ public class JobsServiceTest {
                 Arrays.asList("New Requirement 1", "New Requirement 2"), 8000, "New Location");
         when(jobDatabase.save(any(JobEntity.class))).thenReturn(job_entity1);
 
-        Gauge existingJobs = mock(Gauge.class);
-        when(metricsRegistry.gauge(anyString())).thenReturn(existingJobs);
+        //AtomicLong existingJobs = new AtomicLong(0);
+        when(metricsRegistry.gauge("job_existing", 1)).thenReturn(1);
 
         Job job = jobsService.createJob(jobContent);
 
@@ -195,6 +198,9 @@ public class JobsServiceTest {
 
         Timer applyTimer = mock(Timer.class);
         when(metricsRegistry.timer(anyString())).thenReturn(applyTimer);
+
+        Counter counter = mock(Counter.class);
+        when(metricsRegistry.counter(anyString())).thenReturn(counter);
     
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
         when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));

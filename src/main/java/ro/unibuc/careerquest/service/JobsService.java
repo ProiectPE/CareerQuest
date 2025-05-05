@@ -115,7 +115,7 @@ public class JobsService {
 
         jobDatabase.save(entity);
 
-        metricsRegistry.gauge("job_existing", existingJobsCounter.incrementAndGet())
+        metricsRegistry.gauge("job_existing", existingJobsCounter.incrementAndGet());
 
         return new Job(entity); // implemented constructor for ease
     }
@@ -165,7 +165,8 @@ public class JobsService {
     }
 
     public void deleteAllJobs() {
-        metricsRegistry.gauge("job_existing", existingJobsCounter.set(0));
+        AtomicLong existingJobsCounter = new AtomicLong(0);
+        metricsRegistry.gauge("job_existing", existingJobsCounter);
         jobDatabase.deleteAll();
     }
 
