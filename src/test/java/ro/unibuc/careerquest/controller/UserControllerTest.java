@@ -202,7 +202,7 @@ class UserControllerTest {
             .andExpect(jsonPath("$.firstName").value("Fabian"))
             .andExpect(jsonPath("$.lastName").value("Anghel"))
             .andExpect(jsonPath("$.birthdate").value("2003-04-02"))
-            .andExpect(jsonPath("$.age").value("21")) //change to 22 next week
+            .andExpect(jsonPath("$.age").value("22")) //change to 22 next week
             .andExpect(jsonPath("$.email").value("user1@email.com"));
     }
 

@@ -106,8 +106,12 @@ public class JobsService {
     }
     
     //return all the jobs created by an employer
-    public List<JobEntity> getJobsByEmployer(String employerId) {
-        return jobDatabase.findByEmployer(employerId);
+    public List<Job> getJobsByEmployer(String employerId) {
+        List<JobEntity> jobs = jobDatabase.findByEmployer(employerId);
+
+        return jobs.stream()
+                .map(job -> new Job(job))
+                .collect(Collectors.toList());
     }
 
     public Job createJob(JobContent job) {

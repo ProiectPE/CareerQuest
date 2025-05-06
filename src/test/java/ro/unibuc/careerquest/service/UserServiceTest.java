@@ -213,7 +213,7 @@ class UserServiceTest {
         assertEquals("Anghel", user.getLastName());
         assertEquals("Fabian Anghel", user.getName());
         assertEquals(LocalDate.of(2003,4,2), user.getBirthdate());
-        assertEquals(21, user.getAge()); //to update on april 2nd
+        assertEquals(22, user.getAge()); //to update on april 2nd
 
         //exception for nonexisting user
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(nonExistingUsername, userUpdate));
