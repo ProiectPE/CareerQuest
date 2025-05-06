@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ro.unibuc.careerquest.data.ApplicationEntity;
 import ro.unibuc.careerquest.data.ApplicationRepository;
@@ -22,7 +23,6 @@ import ro.unibuc.careerquest.data.CVComponent;
 import ro.unibuc.careerquest.data.CVEntity;
 import ro.unibuc.careerquest.data.CVRepository;
 import ro.unibuc.careerquest.data.JobEntity;
-import ro.unibuc.careerquest.data.EmployerEntity;
 import ro.unibuc.careerquest.data.JobRepository;
 import ro.unibuc.careerquest.data.UserEntity;
 import ro.unibuc.careerquest.data.UserRepository;
@@ -32,6 +32,12 @@ import ro.unibuc.careerquest.dto.JobContent;
 import ro.unibuc.careerquest.exception.AlreadyAppliedException;
 import ro.unibuc.careerquest.exception.EntityNotFoundException;
 import ro.unibuc.careerquest.exception.JobNotFoundException;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.MeterRegistry;
+import java.util.concurrent.atomic.AtomicLong;
 
 @ExtendWith(SpringExtension.class)
 public class JobsServiceTest {
@@ -47,8 +53,18 @@ public class JobsServiceTest {
     @Mock 
     private CVRepository cvRepository;
 
+
+    @Mock
+    private MeterRegistry metricsRegistry;
+
+    // Let Spring inject the real dependencies into JobsService
+    // @Autowired
+    // private JobsService jobsService;
+
     @InjectMocks
     private JobsService jobsService = new JobsService();
+
+
 
     @BeforeEach
     void setUp() {
@@ -69,6 +85,9 @@ public class JobsServiceTest {
 
         when(jobDatabase.findAll()).thenReturn(jobs);
 
+        Timer getJobsTimer = mock(Timer.class);
+        when(metricsRegistry.timer(anyString())).thenReturn(getJobsTimer);
+
         List<Job> jobs_new = jobsService.getAllJobs();
 
         assertEquals(2, jobs_new.size());
@@ -82,6 +101,10 @@ public class JobsServiceTest {
         String jobId = "1";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
 
+        Counter getJobCounter = mock(Counter.class);
+        //when(metricsRegistry.counter(anyString())).thenReturn(getJobCounter);
+        when(metricsRegistry.counter(anyString(), anyString())).thenReturn(getJobCounter);
+
         Job job = jobsService.getJob(jobId);
 
         assertEquals("1", job.getId());
@@ -94,6 +117,9 @@ public class JobsServiceTest {
         String jobId = "1";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
 
+        when(metricsRegistry.gauge("job_existing", 0)).thenReturn(0);
+        when(metricsRegistry.gauge("job_existing", 1)).thenReturn(1);
+
         jobsService.deleteJob(jobId);
 
         verify(jobDatabase, times(1)).delete(job_entity1);
@@ -103,6 +129,10 @@ public class JobsServiceTest {
     public void test_deleteNonExistingJob() {
         String jobId = "3";
         when(jobDatabase.findById(jobId)).thenReturn(Optional.empty());
+
+        //AtomicLong existingJobs = new AtomicLong(0);
+        when(metricsRegistry.gauge("job_existing", 1)).thenReturn(1);
+        when(metricsRegistry.gauge("job_existing", 0)).thenReturn(0);
 
         assertThrows(EntityNotFoundException.class, () -> jobsService.deleteJob(jobId));
     }
@@ -141,6 +171,9 @@ public class JobsServiceTest {
                 Arrays.asList("New Requirement 1", "New Requirement 2"), 8000, "New Location");
         when(jobDatabase.save(any(JobEntity.class))).thenReturn(job_entity1);
 
+        //AtomicLong existingJobs = new AtomicLong(0);
+        when(metricsRegistry.gauge("job_existing", 1)).thenReturn(1);
+
         Job job = jobsService.createJob(jobContent);
 
         assertEquals("1", job.getId());
@@ -162,6 +195,12 @@ public class JobsServiceTest {
         cv_entity.addSkill("Java");
         cv_entity.addSkill("C");
         cv_entity.addTool("SWE");
+
+        Timer applyTimer = mock(Timer.class);
+        when(metricsRegistry.timer(anyString())).thenReturn(applyTimer);
+
+        Counter counter = mock(Counter.class);
+        when(metricsRegistry.counter(anyString())).thenReturn(counter);
     
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
         when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));
@@ -191,6 +230,9 @@ public class JobsServiceTest {
         cv_entity.addSkill("Java");
         cv_entity.addSkill("C");
         cv_entity.addTool("SWE");
+
+        Timer applyTimer = mock(Timer.class);
+        when(metricsRegistry.timer(anyString())).thenReturn(applyTimer);
     
         when(jobDatabase.findById(jobId)).thenReturn(Optional.of(job_entity1));
         when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv_entity));

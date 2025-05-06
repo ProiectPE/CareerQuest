@@ -14,6 +14,8 @@ import ro.unibuc.careerquest.data.ApplicationRepository;
 import ro.unibuc.careerquest.data.UserRepository;
 import ro.unibuc.careerquest.data.CVEntity;
 import ro.unibuc.careerquest.data.CVRepository;
+import ro.unibuc.careerquest.data.EmployerEntity;
+import ro.unibuc.careerquest.data.EmployerRepository;
 import ro.unibuc.careerquest.data.UserEntity;
 import ro.unibuc.careerquest.dto.CV;
 import ro.unibuc.careerquest.dto.User;
@@ -29,6 +31,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicLong;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JobsService {
@@ -48,14 +56,28 @@ public class JobsService {
     @Autowired
     private EmployerRepository employerRepository;
 
+    @Autowired
+    private MeterRegistry metricsRegistry;
+
     private final AtomicLong counter = new AtomicLong();
     private final AtomicLong appCounter = new AtomicLong();
+
+    private final AtomicLong jobViewingsCounter = new AtomicLong();
+    private final AtomicLong existingJobsCounter = new AtomicLong();
+    private final AtomicLong existingApplicationCounter = new AtomicLong();
+
     private static final String helloTemplate = "Hello, %s!";
     private static final String informationTemplate = "%s : %s!";
     private static final int FREE_POST_LIMIT = 5;
 
+
     public List<Job> getAllJobs() {
+        final long start =System.currentTimeMillis();
+
         List<JobEntity> entities = jobDatabase.findAll();
+        final long end =System.currentTimeMillis();
+        metricsRegistry.timer("get_all_jobs").record(end - start, TimeUnit.MILLISECONDS);
+
         return entities.stream()
                 .map(entity -> new Job(entity))
                 .collect(Collectors.toList());
@@ -77,49 +99,53 @@ public class JobsService {
     public Job getJob(String id) throws EntityNotFoundException {
         Optional<JobEntity> optionalEntity = jobDatabase.findById(id);
         JobEntity entity = optionalEntity.orElseThrow(() -> new EntityNotFoundException(id));
+
+        metricsRegistry.counter("job_viewing", id).increment(jobViewingsCounter.incrementAndGet());
+
         return new Job(entity); // implemented constructor for ease
     }
-
-    public List<Job> getJobsByEmployer(String employerId) {
-        List<JobEntity> entities = jobDatabase.findByEmployer(employerId);
-        return entities.stream()
-                .map(entity -> new Job(entity))
-                .collect(Collectors.toList());
+    
+    //return all the jobs created by an employer
+    public List<JobEntity> getJobsByEmployer(String employerId) {
+        return jobDatabase.findByEmployer(employerId);
     }
 
     public Job createJob(JobContent job) {
         JobEntity entity = new JobEntity(Long.toString(counter.incrementAndGet()), job); // implemented constructor for ease
 
         jobDatabase.save(entity);
+
+        metricsRegistry.gauge("job_existing", existingJobsCounter.incrementAndGet());
+
         return new Job(entity); // implemented constructor for ease
     }
 
-     
-    // public Job createJob(JobContent job, String employerId) {
-    //     // EmployerEntity employer = employerRepository.findById(employerId)
-    //     //         .orElseThrow(() -> new EntityNotFoundException("Employer not found"));
+   /*
+     public Job createJob(JobContent job, String employerId) {
+        EmployerEntity employer = employerRepository.findById(employerId)
+                .orElseThrow(() -> new EntityNotFoundException("Employer not found"));
 
-    //     // // Verify if the payment for this month is done
-    //     // if (employer.getLastPaymentDate() == null || employer.getLastPaymentDate().isBefore(LocalDate.now().minusMonths(1))) {
-    //     //     employer.setPremium(false); // If the payment is not done, then we don't have a premium account
-    //     //     employerRepository.save(employer);
-    //     // }
+        // Verify if the payment for this month is done
+        if (employer.getLastPaymentDate() == null || employer.getLastPaymentDate().isBefore(LocalDate.now().minusMonths(1))) {
+            employer.setPremium(false); // If the payment is not done, then we don't have a premium account
+            employerRepository.save(employer);
+        }
 
-    //     // // If we are not premium, check how many free post we have
-    //     // if (!employer.isPremium()) {
-    //     //     long jobCount = jobDatabase.countByEmployer(employerId);
-    //     //     if (jobCount >= FREE_POST_LIMIT) {
-    //     //         throw new RuntimeException("Limit exceeded. Upgrade to premium to post more jobs.");
-    //     //     }
-    //     // }
+        // If we are not premium, check how many free post we have
+        if (!employer.isPremium()) {
+            long jobCount = jobDatabase.countByEmployer(employerId);
+            if (jobCount >= FREE_POST_LIMIT) {
+                throw new RuntimeException("Limit exceeded. Upgrade to premium to post more jobs.");
+            }
+        }
 
-    //     JobEntity entity = new JobEntity(Long.toString(counter.incrementAndGet()), job); // implemented constructor for ease
-    //     //entity.setEmployer(employer.getName());
+        JobEntity entity = new JobEntity(Long.toString(counter.incrementAndGet()), job); // implemented constructor for ease
 
-    //     jobDatabase.save(entity);
-    //     return new Job(entity);
+        jobDatabase.save(entity);
+        return new Job(entity);
    
-    // }
+    }
+*/
     
     public Job updateJob(String id, JobContent job) throws EntityNotFoundException {
         JobEntity entity = jobDatabase.findById(id)
@@ -132,10 +158,15 @@ public class JobsService {
     public void deleteJob(String id) throws EntityNotFoundException {
         JobEntity entity = jobDatabase.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(id)));
+
+        metricsRegistry.gauge("job_existing", existingJobsCounter.decrementAndGet());
+        
         jobDatabase.delete(entity);
     }
 
     public void deleteAllJobs() {
+        AtomicLong existingJobsCounter = new AtomicLong(0);
+        metricsRegistry.gauge("job_existing", existingJobsCounter);
         jobDatabase.deleteAll();
     }
 
@@ -145,6 +176,8 @@ public class JobsService {
     }
 
     public Application jobApply(String jobId, String cvId) throws EntityNotFoundException, CVNotFoundException, UserNotFoundException, AlreadyAppliedException {
+        final long start = System.currentTimeMillis();
+        
         //get job
         JobEntity job = jobDatabase.findById(jobId)
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(jobId)));
@@ -174,6 +207,12 @@ public class JobsService {
                 user.getBirthdate(), user.getEmail(), user.getPhone());
 
         Application fullApp = new Application(app.getId(), jobData, userData, cvData);
+
+        metricsRegistry.counter("applications_existing").increment(existingApplicationCounter.incrementAndGet());
+
+        final long end = System.currentTimeMillis();
+
+        metricsRegistry.timer("apply_time").record(end - start, TimeUnit.MILLISECONDS);
 
         return fullApp;
     }

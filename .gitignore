@@ -43,3 +43,5 @@ infrastructure/prometheus/durable
 
 ### Durable Loki store
 infrastructure/loki/durable/
+.DS_Store
+src/.DS_Store
